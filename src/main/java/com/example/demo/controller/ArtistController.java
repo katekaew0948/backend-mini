@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.model.Account;
 import com.example.demo.model.Artist;
 import com.example.demo.model.Contact;
+import com.example.demo.model.Image;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.ArtistRepository;
 import com.example.demo.repository.ContactRepository;
+import com.example.demo.repository.ImageRepository;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -33,8 +35,8 @@ public class ArtistController {
 	AccountRepository accountRepository;
 	@Autowired
 	ContactRepository contactRepository;
-//	@Autowired
-//	ImageRepository imageRepository;
+	@Autowired
+	ImageRepository imageRepository;
 	
 	@GetMapping("/artist")
 	public ResponseEntity<Object> getArtist() {
@@ -66,11 +68,11 @@ public class ArtistController {
 				contactRepository.save(contact);
 			}
 			
-//			for (Image image : body.getImages()) {
-//				image.setArtist(artist);
-//				
-//				imageRepository.save(image);
-//			}
+			for (Image image : body.getImages()) {
+				image.setArtist(artist);
+				
+				imageRepository.save(image);
+			}
 
 			return new ResponseEntity<>(artist, HttpStatus.CREATED);
 

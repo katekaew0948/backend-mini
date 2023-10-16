@@ -32,9 +32,9 @@ public class Artist {
 	@JoinColumn(name = "art_id")
 	private List<Contact> contacts;
 	
-//	@OneToMany
-//	@JoinColumn(name = "art_id")
-//	private List<Image> images;
+	@OneToMany
+	@JoinColumn(name = "art_id")
+	private List<Image> images;
 	
 	
 	public Artist(int id, int artistId, String penName, String ratePrice, String detail, int exp) {
@@ -111,13 +111,13 @@ public class Artist {
 		this.contacts = contact;
 	}
 
-//	public List<Image> getImages() {
-//		return images;
-//	}
-//
-//	public void setImages(List<Image> images) {
-//		this.images = images;
-//	}
+	public List<Image> getImages() {
+		return images;
+	}
+
+	public void setImages(List<Image> images) {
+		this.images = images;
+	}
 	
 	
 }
