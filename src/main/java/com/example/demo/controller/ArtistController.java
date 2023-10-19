@@ -103,6 +103,29 @@ public class ArtistController {
 			return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@GetMapping("/artist/myAcc/{accountId}")
+	public ResponseEntity<Object> getArtistAccount(@PathVariable Integer accountId) {
+
+		try {
+
+			List<Artist> artists = artistRepository.findByAccountId(accountId);
+
+			if (!artists.isEmpty()) {
+				System.out.println("isEmpty:"+artists.isEmpty());
+
+				return new ResponseEntity<>(artists, HttpStatus.OK);
+			} else {
+
+				return new ResponseEntity<>("artist not found", HttpStatus.BAD_REQUEST);
+			}
+
+		} catch (Exception e) {
+
+			return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 	@PutMapping("/artist/{artistId}")
 	public ResponseEntity<Object> updateArtist(@PathVariable Integer artistId, @RequestBody Artist body) {
 
@@ -116,13 +139,20 @@ public class ArtistController {
 				artist.get().setExp(body.getExp());
 				artist.get().setArtistId(body.getArtistId());
 				artist.get().setDetail(body.getDetail());
+
+				artistRepository.save(artist.get());
 				
 				for (Contact contact : body.getContact()) {
+					contact.setArtist(artist.get());
 					
 					contactRepository.save(contact);
 				}
-
-				artistRepository.save(artist.get());
+				
+				for (Image image : body.getImages()) {
+					image.setArtist(artist.get());
+					
+					imageRepository.save(image);
+				}
 
 				return new ResponseEntity<>(artist, HttpStatus.OK);
 			} else {
@@ -146,6 +176,32 @@ public class ArtistController {
 				artistRepository.delete(artist.get());
 
 				return new ResponseEntity<>("DELETE SUCSESS", HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>("artist not found", HttpStatus.BAD_REQUEST);
+			}
+
+		} catch (Exception e) {
+			System.out.println(e);
+			return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@DeleteMapping("/artist/{artistId}/{imageId}")
+	public ResponseEntity<Object> deleteImage(@PathVariable Integer artistId ,@PathVariable Integer imageId) {
+
+		try {
+
+			Optional<Artist> artist = artistRepository.findById(artistId);
+
+			if (artist.isPresent()) {
+				Optional<Image> image = imageRepository.findById(imageId);
+				if(image.isPresent()) {
+					imageRepository.delete(image.get());
+				}else {
+					return new ResponseEntity<>("image not found", HttpStatus.BAD_REQUEST);
+				}
+
+				return new ResponseEntity<>("DELETE IMAGE SUCSESS", HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>("artist not found", HttpStatus.BAD_REQUEST);
 			}
